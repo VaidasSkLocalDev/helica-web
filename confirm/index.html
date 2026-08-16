@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>El. pašto patvirtinimas — Helica</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0;
+         display: grid; min-height: 100dvh; place-items: center;
+         background: #faf7f5; color: #1c1c1e; }
+  main { max-width: 26rem; padding: 2rem; text-align: center; }
+  .mark { width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 1rem;
+          display: grid; place-items: center; background: #DA7F5E;
+          color: #fff; font-size: 28px; font-weight: 700; }
+  h1 { font-size: 1.4rem; margin: 0 0 .5rem; }
+  p { color: #6b6b6b; line-height: 1.45; margin: .25rem 0; }
+  hr { border: 0; border-top: 1px solid #e5ddd8; margin: 1.25rem 0; }
+  button { background: #DA7F5E; color: #fff; border: 0; border-radius: 12px;
+           padding: 14px 32px; font-size: 1rem; font-weight: 600;
+           font-family: inherit; margin-top: 1.25rem; }
+  button:disabled { opacity: .5; }
+  [hidden] { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <div class="mark">H</div>
+
+  <section id="loading">
+    <p>Tikrinama nuoroda… / Checking the link…</p>
+  </section>
+
+  <section id="valid" hidden>
+    <h1>Patvirtinkite el. paštą</h1>
+    <p>Paspauskite mygtuką, kad patvirtintumėte šį el. pašto adresą — taip
+       jūsų treneris žinos, jog „Helica“ laiškai jus pasiekia.</p>
+    <button id="confirm">Patvirtinti / Confirm</button>
+    <hr>
+    <p><strong>Confirm your email</strong><br>
+       Tap the button to confirm this email address — your coach will know
+       Helica emails reach you.</p>
+  </section>
+
+  <section id="confirmed" hidden>
+    <h1>El. paštas patvirtintas</h1>
+    <p>Ačiū! Jūsų treneris dabar žino, kad laiškai jus pasiekia.
+       Šį langą galite uždaryti.</p>
+    <hr>
+    <p><strong>Email confirmed</strong><br>
+       Thank you! Your coach now knows these emails reach you.
+       You can close this window.</p>
+  </section>
+
+  <section id="already" hidden>
+    <h1>El. paštas jau patvirtintas</h1>
+    <p>Šis adresas jau patvirtintas anksčiau — nieko daugiau daryti nereikia.</p>
+    <hr>
+    <p><strong>Email already confirmed</strong><br>
+       This address was already confirmed — nothing more to do.</p>
+  </section>
+
+  <section id="invalid" hidden>
+    <h1>Nuoroda nebegalioja</h1>
+    <p>Ši patvirtinimo nuoroda pakeista naujesne arba klientas pašalintas.
+       Jei manote, kad tai klaida, susisiekite su savo treneriu.</p>
+    <hr>
+    <p><strong>This link is no longer valid</strong><br>
+       This confirmation link was replaced by a newer one, or the client was
+       removed. If you think this is a mistake, contact your coach.</p>
+  </section>
+
+  <section id="error" hidden>
+    <h1>Nepavyko susisiekti</h1>
+    <p>Patikrinkite interneto ryšį ir atidarykite nuorodą dar kartą.</p>
+    <hr>
+    <p><strong>Couldn't connect</strong><br>
+       Check your connection and open the link again.</p>
+  </section>
+</main>
+
+<script>
+  var API = "https://mvbzvxqasjeuzpfnpttm.supabase.co/functions/v1/confirm-client-email";
+  var token = new URLSearchParams(location.search).get("token") || "";
+
+  function show(id) {
+    ["loading", "valid", "confirmed", "already", "invalid", "error"].forEach(function (s) {
+      document.getElementById(s).hidden = s !== id;
+    });
+  }
+
+  function stateFor(body) {
+    if (body.state === "valid") return "valid";
+    if (body.state === "already_confirmed") return "already";
+    if (body.state === "confirmed") return "confirmed";
+    return "invalid";
+  }
+
+  async function check() {
+    if (!token) return show("invalid");
+    try {
+      var response = await fetch(API + "?token=" + encodeURIComponent(token));
+      show(stateFor(await response.json()));
+    } catch (e) {
+      show("error");
+    }
+  }
+
+  document.getElementById("confirm").addEventListener("click", async function () {
+    var button = document.getElementById("confirm");
+    button.disabled = true;
+    try {
+      var response = await fetch(API + "?token=" + encodeURIComponent(token), { method: "POST" });
+      show(stateFor(await response.json()));
+    } catch (e) {
+      show("error");
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  check();
+</script>
+</body>
+</html>
