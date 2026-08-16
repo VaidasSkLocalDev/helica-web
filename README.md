@@ -13,4 +13,4 @@ Pages must be hosted OFF `*.supabase.co` — the Supabase gateway flattens all
 HTML responses (functions and storage alike) to `text/plain` with a sandbox
 CSP as an anti-phishing measure.
 
-Planned (C8): legal pages (terms, privacy) and the helica.lt custom domain.
+Planned (C8): legal pages (terms, privacy) at helica.lt/terms + /privacy.
