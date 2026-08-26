@@ -5,10 +5,10 @@ Static pages for Helica, served via GitHub Pages at https://helica.lt.
 - `index.html` — minimal landing page (logo, one-liner, legal links). Added
   in C8 so visitors no longer see this README as the homepage.
 - `terms/` + `privacy/` — legal pages (the URLs both apps' `LegalLinks.swift`
-  point at). DRAFTS until the bracketed placeholders (legal entity, contact,
-  jurisdiction, dates) are filled by the owner; grounded in the app repo's
-  `docs/privacy-evidence.md` + `docs/terms-evidence.md`. Re-review both when
-  C9 (scan photo storage), payments, or AI features ship.
+  point at); grounded in the app repo's `docs/privacy-evidence.md` +
+  `docs/terms-evidence.md`, operator/contact/jurisdiction confirmed by the
+  owner 2026-08-26. Re-review both when C9 (scan photo storage), payments,
+  or AI features ship.
 - `confirm/` — client-invite email confirmation landing page. The invitation
   email (Supabase edge function `send-client-invite` in the main repo) links
   here with `?token=…`; the page validates the token against the
